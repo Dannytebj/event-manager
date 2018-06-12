@@ -1,9 +1,8 @@
-import React from 'react'
+import React from 'react';
 import ReactDOM from 'react-dom';
 
+import App from './js/App';
+import './scss/style.scss';
 
-const LandingPage = () => (
-<div>Welcome</div>
-);
 
-ReactDOM.render(<LandingPage/>, document.getElementById("root"));
+ReactDOM.render(<App />, document.getElementById('root'));
