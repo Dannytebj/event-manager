@@ -6,6 +6,7 @@ import isEmpty from 'lodash/isEmpty';
 
 export function signUpValidator(data) {
   let errors = {};
+  console.log(data)
   if (!validator.isEmail(data.email)){
     errors.email = 'Please provide a valid email';
   }

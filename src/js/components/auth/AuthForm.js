@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import classname from 'classnames';
 import TextBox from '../../utils/TextBox';
+import { authFormInputs, setValidationError } from '../../actions/authActions';
 import { signInValidator, signUpValidator } from '../../utils/validators';
 
 const propTypes = {
   isSigningUp: PropTypes.bool,
   signUp: PropTypes.func.isRequired,
-  signIn: PropTypes.func.isRequired
+  signIn: PropTypes.func.isRequired,
+  authFormInputs: PropTypes.func
 };
 
 
@@ -15,31 +18,17 @@ const propTypes = {
 class AuthForm extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      name: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      errors: {},
-      isLoading: false
-    };
     this.onSubmit = this.onSubmit.bind(this);
-  }
-  static getDerivedStateFromProps(props, state) {
-    if (!props.isSigningUp) {
-      console.log(props);
-    }
-    return null;
   }
 
   createUser() {
-    const { isValid, errors } = signUpValidator(this.state);
+    const { isValid, errors } = signUpValidator(this.props);
     if(!isValid) {
-      this.setState({ errors });
+      this.props.authFormInputs({ prop: 'errors', value: errors });
     } else {
-      this.props.signUp(this.state)
+      this.props.signUp(this.props)
       .then(response => {
-        console.log(response);
+        console.log(response, 'AUTHFOrm');
       })
       .catch(error => {
         this.setState({ errors: error.response.data, isLoading: false })});
@@ -47,19 +36,12 @@ class AuthForm extends Component {
   }
 
   login() {
-    const { isValid, errors } = signInValidator(this.state);
+    const { isValid, errors } = signInValidator(this.props);
     if(!isValid) {
-      this.setState({ errors });
+      this.props.setValidationError(errors);
     } else {
-      const { email, password } = this.state;
+      const { email, password } = this.props;
       this.props.signIn({ email, password })
-      .then(response => {
-        console.log(response);
-        this.setState({ name: '', email: '', password: '', confirmPassword:'' })
-
-      })
-      .catch(error => {
-        this.setState({ errors: error.response.data, isLoading: false })});
     }
 
   }
@@ -72,13 +54,13 @@ class AuthForm extends Component {
     }
   }
   render() {
-    const { name, email, password, confirmPassword, errors } = this.state;
+    const { name, email, password, confirmPassword, errors } = this.props;
     return (
       <div className="sign-up">
         {(this.props.isSigningUp) ?
           <TextBox
-            className={classname("text-box", { 'has-error': errors.name })}
-            onChange={(value) => { this.setState({ name: value }); }}
+            className={classname("text-box", { 'has-error': errors.email })}
+            onChange={ value => this.props.authFormInputs({ prop:'name', value })}
             label="Full Name"
             currentValue={name}
             error={errors.name}
@@ -86,14 +68,14 @@ class AuthForm extends Component {
         }
         <TextBox
           className={classname("text-box", { 'has-error': errors.email })}
-          onChange={(value) => { this.setState({ email: value }); }}
+          onChange={ value => this.props.authFormInputs({ prop:'email', value })}
           label="Email"
           currentValue={email}
           error={errors.email}
         />
         <TextBox
           className={classname("text-box", { 'has-error': errors.password })}
-          onChange={(value) => { this.setState({ password: value }); }}
+          onChange={ value => this.props.authFormInputs({ prop:'password', value })}
           label="Password"
           currentValue={password}
           isPassword
@@ -102,7 +84,7 @@ class AuthForm extends Component {
         {(this.props.isSigningUp) ?
           <TextBox
             className={classname("text-box", { 'has-error': errors.confirmPassword })}
-            onChange={(value) => { this.setState({ confirmPassword: value }); }}
+            onChange={ value => this.props.authFormInputs({ prop:'confirmPassword', value })}
             label="Confirm Password"
             currentValue={confirmPassword}
             isPassword
@@ -114,20 +96,11 @@ class AuthForm extends Component {
     );
   }
 }
+const mapStateToProps = state => {
+  const {name, email, password, confirmPassword, errors } = state.auth;
+  return {
+    name, email, password, confirmPassword, errors
+  }
+}
 AuthForm.propTypes = propTypes;
-export default AuthForm;
-
-// this.setState({ errors: {}, isLoading: true });
-//       if (isSigningUp){
-//         signUp(this.state)
-//         .then(response => {
-//           console.log(response);
-//         })
-//         .catch(error => {
-//           this.setState({ errors: error.response.data, isLoading: false })});
-//       }
-//       signIn(this.state)
-//       .then(response => {
-//         console.log(response);
-//       })
-//       .catch(error => this.setState({ errors: error.response.data, isLoading: false }));
+export default connect(mapStateToProps, { authFormInputs, setValidationError })(AuthForm);

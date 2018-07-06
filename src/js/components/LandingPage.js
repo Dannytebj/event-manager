@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import AuthModal from './auth/AuthModal';
+import { connect } from 'react-redux';
+import { resetAuthStore } from '../actions/authActions';
 
 class LandingPage extends Component {
   constructor(props) {
@@ -40,6 +42,7 @@ class LandingPage extends Component {
       isModalOpen: false,
       isSigningUp: false
     });
+    this.props.resetAuthStore();
   }
   render() {
     return (
@@ -80,4 +83,4 @@ class LandingPage extends Component {
   }
 }
 
-export default LandingPage;
+export default connect(null, { resetAuthStore })(LandingPage);

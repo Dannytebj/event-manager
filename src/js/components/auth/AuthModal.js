@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { signIn, signUp } from '../../actions/authActions';
+import {
+  signIn,
+  signUp,
+  authFormInputs,
+  setValidationError
+} from '../../actions/authActions';
 import AuthForm from './AuthForm';
 
 const propTypes = {
@@ -21,7 +26,7 @@ class AuthModal extends Component {
   }
 
   render() {
-    const { isModalOpen, isSigningUp, signUp, signIn } = this.props;
+    const { isModalOpen, isSigningUp, signUp, signIn, updateInput } = this.props;
     return (
       <div id="myModal" className="modal" style={(isModalOpen) ? { display: 'block' } : { display: 'none' }}>
         <div className="modal-content">
@@ -30,7 +35,11 @@ class AuthModal extends Component {
             <h2>{(isSigningUp) ? 'Create Account' : 'Sign In'}</h2>
           </div>
           <div className="modal-body">
-            <AuthForm isSigningUp={isSigningUp} signUp={signUp} signIn={signIn} />
+            <AuthForm
+            isSigningUp={isSigningUp}
+            signUp={signUp}
+            signIn={signIn}
+            />
           </div>
           <div className="modal-footer">
             <h3>Modal Footer</h3>
@@ -41,5 +50,10 @@ class AuthModal extends Component {
   }
 }
 
+
 AuthModal.propTypes = propTypes;
-export default connect(null,{ signUp, signIn })(AuthModal);
+export default connect(null, {
+  signIn,
+  signUp,
+  authFormInputs,
+  setValidationError})(AuthModal);

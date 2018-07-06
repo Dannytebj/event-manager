@@ -22,7 +22,7 @@ const TextBox = ({
 
 TextBox.propTypes = {
   onChange: PropTypes.func.isRequired,
-  currentValue: PropTypes.string.isRequired,
+  currentValue: PropTypes.string,
   label: PropTypes.string.isRequired,
   isPassword: PropTypes.bool,
   className: PropTypes.string,
